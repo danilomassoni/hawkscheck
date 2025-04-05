@@ -20,7 +20,7 @@ public class Presence {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate date;
+    private LocalDate date; //date of the presence
 
     @Enumerated(EnumType.STRING)
     private StatusPresenceEnum statusPresence; // Presence or Lack
