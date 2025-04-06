@@ -7,8 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Table(name = "students")
+@Getter
+@Setter
 public class Student {
     
     @Id
@@ -21,4 +27,9 @@ public class Student {
     @ManyToOne
     @JoinColumn(name = "class_id")
     private Team team;
+
+    // Getters and Setters
+    
+    
+
 }

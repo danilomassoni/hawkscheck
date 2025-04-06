@@ -50,7 +50,7 @@ public class StudentService {
             .map(student -> new StudentResponseDTO(
                 student.getId(),
                 student.getName(),
-                student.getRm,
+                student.getRm(),
                 student.getTeam().getName()
             ))
             .collect(Collectors.toList());
@@ -58,12 +58,35 @@ public class StudentService {
 
     public Optional<StudentResponseDTO> findById(Long id) {
         return studentRepository.findById(id)
-            .map(studen -> new StudentResponseDTO(
+            .map(student -> new StudentResponseDTO(
                 student.getId(),
                 student.getName(),
                 student.getRm(),
                 student.getTeam().getName()
                 ));
+    }
+
+    public List<StudentResponseDTO> findByTeam(Long teamId) {
+        Optional<Team> team = teamRepository.findById(teamId);
+
+        if (team.isEmpty()) {
+            return List.of(); // or throw an exception, depending on the rule
+        }
+
+        return studentRepository.findByTeam(team.get())
+            .stream()
+            .map(student -> new StudentResponseDTO(
+                student.getId(),
+                student.getName(),
+                student.getRm(),
+                student.getTeam().getName()
+                ))
+                .collect(Collectors.toList());
+
+    }
+
+    public void delete(Long id) {
+        studentRepository.deleteById(id);
     }
     
 
