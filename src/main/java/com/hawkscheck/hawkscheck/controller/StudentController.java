@@ -27,9 +27,8 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<StudentResponseDTO> createStudent(@RequestBody StudentRequestDTO studentRequestDTO) {
-        StudentResponseDTO studentCreated = studentService.createStudent(studentRequestDTO);
-        return ResponseEntity.ok(studentCreated);
+    public StudentResponseDTO createStudent(@RequestBody StudentRequestDTO dto) {
+        return studentService.createStudent(dto);
     }
 
     @GetMapping

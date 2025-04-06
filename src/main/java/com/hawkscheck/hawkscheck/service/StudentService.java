@@ -40,7 +40,8 @@ public class StudentService {
             saved.getId(),
             saved.getName(),
             saved.getRm(),
-            saved.getTeam().getName()
+            saved.getTeam().getName(),
+            saved.getTeam().getId()
         );
     }
 
@@ -51,7 +52,8 @@ public class StudentService {
                 student.getId(),
                 student.getName(),
                 student.getRm(),
-                student.getTeam().getName()
+                student.getTeam().getName(),
+                student.getTeam().getId()
             ))
             .collect(Collectors.toList());
     }
@@ -62,7 +64,8 @@ public class StudentService {
                 student.getId(),
                 student.getName(),
                 student.getRm(),
-                student.getTeam().getName()
+                student.getTeam().getName(),
+                student.getTeam().getId()
                 ));
     }
 
@@ -79,7 +82,8 @@ public class StudentService {
                 student.getId(),
                 student.getName(),
                 student.getRm(),
-                student.getTeam().getName()
+                student.getTeam().getName(),
+                student.getTeam().getId()
                 ))
                 .collect(Collectors.toList());
 

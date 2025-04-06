@@ -13,13 +13,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+@Entity(name = "Presence")
 @Table(name = "tb_presence")
 @Getter
 @Setter
+@Data
 public class Presence {
     
     @Id
@@ -28,10 +30,14 @@ public class Presence {
 
     private LocalDate date; //date of the presence
 
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
+
     @Enumerated(EnumType.STRING)
     private StatusPresenceEnum statusPresence; // Presence or Lack
 
     @ManyToOne
     @JoinColumn(name = "id_user")
-    private User user; 
+    private com.hawkscheck.hawkscheck.model.User user; 
 }

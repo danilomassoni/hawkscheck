@@ -15,11 +15,12 @@ public class StudentResponseDTO {
     private String teamName;
     private Long teamId;
 
-    public StudentResponseDTO(Long id, String name, String rm, String teamName) {
+    public StudentResponseDTO(Long id, String name, String rm, String teamName, Long teamId) {
         this.id = id;
         this.name = name;
         this.rm = rm;
         this.teamName = teamName;
+        this.teamId = teamId;
     }
     
 }
