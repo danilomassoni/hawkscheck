@@ -23,7 +23,7 @@ public class StudentService {
     @Autowired
     private TeamRepository teamRepository;
 
-    public StudentResponseDTO save(StudentRequestDTO dto) {
+    public StudentResponseDTO createStudent(StudentRequestDTO dto) {
         Optional<Team> teamOptional = teamRepository.findById(dto.getTeamId());
 
         if (teamOptional.isEmpty()) {
@@ -85,7 +85,31 @@ public class StudentService {
 
     }
 
-    public void delete(Long id) {
+    public StudentResponseDTO updateStudent(Long id, StudentRequestDTO studentRequestDTO) {
+        Student studentExists = studentRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        studentExists.setName(studentRequestDTO.getName());
+        studentExists.setRm(studentRequestDTO.getRm());
+
+        if (studentRequestDTO.getTeamId() != null) {
+            Team team = teamRepository.findById(studentRequestDTO.getTeamId())
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+            studentExists.setTeam(team);
+        }
+
+        Student studentUpdated = studentRepository.save(studentExists);
+
+        StudentResponseDTO response = new StudentResponseDTO();
+        response.setId(studentUpdated.getId());
+        response.setName(studentUpdated.getName());
+        response.setRm(studentUpdated.getRm());
+        response.setTeamId(studentUpdated.getTeam().getId());
+    
+        return response;
+    }
+
+    public void deleteStudent(Long id) {
         studentRepository.deleteById(id);
     }
     
