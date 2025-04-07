@@ -37,6 +37,10 @@ public class PresenceService {
         return presenceRepository.findByStatusPresence(status);
     }
 
+    public List<Presence> findByDateBetween(LocalDate start, LocalDate end) {
+        return presenceRepository.findByDateBetween(start, end);
+    }
+
 
     
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hawkscheck.hawkscheck.model.Presence;
@@ -49,5 +50,13 @@ public class PresenceController {
     public ResponseEntity<List<Presence>> byStatus(@PathVariable StatusPresenceEnum status) {
         return ResponseEntity.ok(presenceService.findByStatus(status));
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Presence>> filterByPeriod(
+        @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+        @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+            return ResponseEntity.ok(presenceService.findByDateBetween(start, end));
+        } 
+    
     
 }
