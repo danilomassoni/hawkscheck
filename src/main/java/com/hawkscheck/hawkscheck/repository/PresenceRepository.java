@@ -14,4 +14,6 @@ public interface PresenceRepository extends JpaRepository<Presence, Long> {
     List<Presence> findByDate(LocalDate date);
     List<Presence> findByStatusPresence(StatusPresenceEnum status);
     List<Presence> findByDateBetween(LocalDate start, LocalDate end);
+    boolean existsByStudentIdAndDate(Long StudentId, LocalDate date);
+    List<Presence> findByDateAndStudent_TeamId(LocalDate date, Long teamId);
 }

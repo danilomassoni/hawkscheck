@@ -1,5 +1,6 @@
 package com.hawkscheck.hawkscheck.controller;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hawkscheck.hawkscheck.model.Presence;
 import com.hawkscheck.hawkscheck.model.StatusPresenceEnum;
 import com.hawkscheck.hawkscheck.service.PresenceService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/presences")
@@ -57,6 +60,15 @@ public class PresenceController {
         @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
             return ResponseEntity.ok(presenceService.findByDateBetween(start, end));
         } 
+
+    @GetMapping("/export")
+    public void exportCsv(
+        @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, 
+        @RequestParam("teamId") Long teamId,
+        HttpServletResponse  response) throws IOException {
+            presenceService.exportToCsv(date, teamId, response);
+        }
+    
     
     
 }
