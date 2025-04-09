@@ -9,6 +9,7 @@ import com.hawkscheck.hawkscheck.model.Team;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Student> findByTeam(Team team);
+    List<Student> findByTeamId(Long teamId);
     // Custom query methods can be defined here if needed
     // For example, you can add methods to find students by specific criteria
     

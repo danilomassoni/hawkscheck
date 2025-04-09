@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hawkscheck.hawkscheck.dto.FrequencyReportDTO;
 import com.hawkscheck.hawkscheck.model.Presence;
 import com.hawkscheck.hawkscheck.model.StatusPresenceEnum;
 import com.hawkscheck.hawkscheck.service.PresenceService;
@@ -68,6 +69,11 @@ public class PresenceController {
         HttpServletResponse  response) throws IOException {
             presenceService.exportToCsv(date, teamId, response);
         }
+
+    @GetMapping("/frequency/team/{teamId}")
+    public ResponseEntity<List<FrequencyReportDTO>> getFrequencyByTeam(@PathVariable Long teamId) {
+        return ResponseEntity.ok(presenceService.getFrequencyByTeam(teamId));
+    }
     
     
     
