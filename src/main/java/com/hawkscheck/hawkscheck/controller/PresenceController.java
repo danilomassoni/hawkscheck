@@ -1,6 +1,7 @@
 package com.hawkscheck.hawkscheck.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -71,9 +72,42 @@ public class PresenceController {
         }
 
     @GetMapping("/frequency/team/{teamId}")
-    public ResponseEntity<List<FrequencyReportDTO>> getFrequencyByTeam(@PathVariable Long teamId) {
-        return ResponseEntity.ok(presenceService.getFrequencyByTeam(teamId));
+    public ResponseEntity<List<FrequencyReportDTO>> getFrequencyByTeam(@PathVariable Long teamId, 
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) 
+        {
+        return ResponseEntity.ok(presenceService.getFrequencyByTeam(teamId, startDate, endDate));
     }
+
+    @GetMapping("/frequency/team/{teamId}/csv")
+    public void exportFrequencyCsv(
+        @PathVariable Long teamId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+        HttpServletResponse response)
+        throws IOException {
+            List<FrequencyReportDTO> report = presenceService.getFrequencyByTeam(teamId, startDate, endDate);
+
+            response.setContentType("text/csv");
+            response.setHeader("Content-Disposition", "attachment; fileman=\"frequency_report.csv\"");
+
+            try (PrintWriter writer = response.getWriter()) {
+                writer.println("Student ID, Student Name, Team Name, Total, Present, Absent, Percentage ");
+
+                for (FrequencyReportDTO dto : report) {
+                    writer.printf("%d,%s,%s,%d,%d,%d,%.2f%%\n",
+                        dto.getStudentId(),
+                        dto.getStudentName(),
+                        dto.getTeamName(),
+                        dto.getTotal(),
+                        dto.getPresent(),
+                        dto.getAbsent(),
+                        dto.getPercentage());
+                        
+                }
+            }
+        } 
+    
     
     
     

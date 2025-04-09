@@ -83,9 +83,15 @@ public class PresenceService {
         }
     }
 
-    public List<FrequencyReportDTO> getFrequencyByTeam(Long teamId) {
+    public List<FrequencyReportDTO> getFrequencyByTeam(Long teamId, LocalDate startDate, LocalDate endDate) {
         List<Student> students = studentRepository.findByTeamId(teamId);
         List<Presence> presences = presenceRepository.findByStudent_TeamId(teamId);
+
+        if (startDate != null && endDate != null) {
+            presences = presences.stream()
+                .filter(p -> !p.getDate().isBefore(startDate) && !p.getDate().isAfter(endDate))
+                .collect(Collectors.toList());
+        }
 
         Map<Long, List<Presence>> presenceMap = presences.stream()
             .collect(Collectors.groupingBy(p -> p.getStudent().getId()));
