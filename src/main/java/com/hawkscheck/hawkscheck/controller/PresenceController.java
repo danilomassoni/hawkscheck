@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hawkscheck.hawkscheck.dto.FrequencyReportDTO;
+import com.hawkscheck.hawkscheck.dto.StudentFrequencyReportDTO;
 import com.hawkscheck.hawkscheck.model.Presence;
 import com.hawkscheck.hawkscheck.model.StatusPresenceEnum;
 import com.hawkscheck.hawkscheck.service.PresenceService;
@@ -106,7 +107,39 @@ public class PresenceController {
                         
                 }
             }
-        } 
+        }
+        
+    @GetMapping("/frequency/student/{studentId}")
+    public ResponseEntity<StudentFrequencyReportDTO> getFrequencyByStudent(@PathVariable Long studentId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            return ResponseEntity.ok(presenceService.getFrequencyByStudent(studentId, startDate, endDate));
+        }
+
+    @GetMapping("/frequency/student/{studentId}/csv")
+    public void exportStudentFrquencyCsv(@PathVariable Long studentId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, 
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+        HttpServletResponse response) throws IOException {
+
+            StudentFrequencyReportDTO dto = presenceService.getFrequencyByStudent(studentId, startDate, endDate);
+
+            response.setContentType("text/csv");
+            response.setHeader("Content-Disposition", "attachment; fileman=\"student_frequency_report.csv\"");
+
+            try (PrintWriter writer = response.getWriter()) {
+                writer.println("Student ID, Student Name, Team Name, Total, Present, Absent, Percentage ");
+                
+                writer.printf("%d,%s,%s,%d,%d,%d,%.2f%%\n",
+                    dto.getStudentId(),
+                    dto.getStudentName(),
+                    dto.getTeamName(),
+                    dto.getTotal(),
+                    dto.getPresent(),
+                    dto.getAbsent(),
+                    dto.getPercentage());
+            }
+        }
     
     
     

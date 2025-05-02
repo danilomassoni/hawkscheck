@@ -7,12 +7,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hawkscheck.hawkscheck.dto.FrequencyReportDTO;
+import com.hawkscheck.hawkscheck.dto.StudentFrequencyReportDTO;
 import com.hawkscheck.hawkscheck.model.Presence;
 import com.hawkscheck.hawkscheck.model.StatusPresenceEnum;
 import com.hawkscheck.hawkscheck.model.Student;
@@ -120,6 +122,40 @@ public class PresenceService {
         return result;
 
     }
+
+    public StudentFrequencyReportDTO getFrequencyByStudent(Long studentId, LocalDate startDate, LocalDate endDate) {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty()) {
+            throw new RuntimeException("Student not found");
+        }
+
+        Student student = studentOpt.get();
+
+        List<Presence> presences = presenceRepository.findByStudentId(studentId);
+
+        if (startDate != null && endDate != null) {
+            presences = presences.stream()
+                .filter(p -> !p.getDate().isBefore(startDate) && !p.getDate().isAfter(endDate))
+                .collect(Collectors.toList());
+        }
+
+        long total = presences.size();
+        long present = presences.stream().filter(p -> p.getStatusPresence() == StatusPresenceEnum.PRESENCE).count();
+        long absent = presences.stream().filter(p -> p.getStatusPresence() == StatusPresenceEnum.LACK).count();
+        double percentage = total > 0 ? (present * 100.0) / total : 0;
+
+        StudentFrequencyReportDTO dto = new StudentFrequencyReportDTO();
+        dto.setStudentId(student.getId());
+        dto.setStudentName(student.getName());
+        dto.setTeamName(student.getTeam().getName());
+        dto.setTotal(total);
+        dto.setPresent(present);
+        dto.setAbsent(absent);
+        dto.setPercentage(percentage);
+
+        return dto;
+
+    } 
 
     
 }
