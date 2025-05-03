@@ -21,7 +21,7 @@ public class JwtService {
 
     private static final long EXPIRATION_TIME = 100 * 60 * 60 * 10;
 
-    public String generateToke(UserDetails userDetails, String role) {
+    public String generateToken(UserDetails userDetails, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
         return createToken(claims, userDetails.getUsername());
@@ -48,8 +48,9 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
+    
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());

@@ -1,16 +1,15 @@
 package com.hawkscheck.hawkscheck.security;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
 
-@Component
-public class CustomUserDetailsService implements UserDetailsService  {
-    
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -23,7 +22,8 @@ public class CustomUserDetailsService implements UserDetailsService  {
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                user.getPaper().getAuthorities()
+                user.getPaper().getAuthorities() // deve retornar Collection<? extends GrantedAuthority>
         );
     }
 }
+
