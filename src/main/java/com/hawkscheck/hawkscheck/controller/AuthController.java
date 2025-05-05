@@ -29,22 +29,31 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<JwtAuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String role = userDetails.getAuthorities().stream()
-        .findFirst()
-        .map(grantedAuthority -> grantedAuthority.getAuthority())
-        .orElse("ROLE_USER"); // ou outro padrão se desejar
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String token = jwtService.generateToken(userDetails, role);
+            String role = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .orElse("ROLE_USER");
 
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+            String token = jwtService.generateToken(userDetails, role);
+            return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(401).body("Credenciais inválidas.");
+        } catch (Exception e) {
+            e.printStackTrace(); // ou use um logger
+            return ResponseEntity.status(500).body("Erro interno durante autenticação.");
+        }
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody UserDto userDto) {
