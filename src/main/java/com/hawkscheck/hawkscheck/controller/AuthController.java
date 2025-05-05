@@ -56,7 +56,7 @@ public class AuthController {
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setPaper(userDto.getPaper());
+        user.setPaper(userDto.getPaperEnum());
 
         userRepository.save(user);
         return ResponseEntity.ok("User registered successfully");
