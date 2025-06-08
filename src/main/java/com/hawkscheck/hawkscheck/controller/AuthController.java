@@ -54,7 +54,7 @@ public class AuthController {
         }
     }
 
-
+//Registration endpoint
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody UserDto userDto) {
         if (userRepository.existsByEmail(userDto.getEmail())) {
