@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class AuthResponse {
+public class AuthResponseDTO {
     private String token;
     private String name;
     private PaperEnum paperEnum;

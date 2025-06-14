@@ -1,5 +1,7 @@
 package com.hawkscheck.hawkscheck.model;
 
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

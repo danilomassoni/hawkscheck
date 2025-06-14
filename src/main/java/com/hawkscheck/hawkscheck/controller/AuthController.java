@@ -1,6 +1,6 @@
 package com.hawkscheck.hawkscheck.controller;
 
-import com.hawkscheck.hawkscheck.dto.AuthenticationRequest;
+import com.hawkscheck.hawkscheck.dto.AuthRequestDTO;
 import com.hawkscheck.hawkscheck.dto.JwtAuthenticationResponse;
 import com.hawkscheck.hawkscheck.dto.UserDto;
 import com.hawkscheck.hawkscheck.model.User;
@@ -29,7 +29,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<?> login(@RequestBody AuthRequestDTO request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
