@@ -1,8 +1,10 @@
 package com.hawkscheck.hawkscheck.controller;
 
 import com.hawkscheck.hawkscheck.dto.AuthRequestDTO;
+import com.hawkscheck.hawkscheck.dto.AuthResponseDTO;
 import com.hawkscheck.hawkscheck.dto.JwtAuthenticationResponse;
 import com.hawkscheck.hawkscheck.dto.UserDto;
+import com.hawkscheck.hawkscheck.dto.UserRequestDTO;
 import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
 import com.hawkscheck.hawkscheck.security.JwtService;
@@ -36,36 +38,35 @@ public class AuthController {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = (User) authentication.getPrincipal();
 
-            String role = userDetails.getAuthorities().stream()
-                .findFirst()
-                .map(grantedAuthority -> grantedAuthority.getAuthority())
-                .orElse("ROLE_USER");
+            String token = jwtService.generateToken(user, user.getPaper().name());
 
-            String token = jwtService.generateToken(userDetails, role);
-            return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+            return ResponseEntity.ok( 
+                new AuthResponseDTO(token, user.getName(), user.getPaper())
+            );
+
 
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(401).body("Credenciais inválidas.");
+            return ResponseEntity.status(401).body("Invalids credentials, please try again.");
         } catch (Exception e) {
             e.printStackTrace(); // ou use um logger
-            return ResponseEntity.status(500).body("Erro interno durante autenticação.");
+            return ResponseEntity.status(500).body("Error during authentication, please try again later.");
         }
     }
 
 //Registration endpoint
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody UserDto userDto) {
-        if (userRepository.existsByEmail(userDto.getEmail())) {
+    public ResponseEntity<String> register(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+        if (userRepository.existsByEmail(userRequestDTO.getEmail())) {
             return ResponseEntity.badRequest().body("Email already in use");
         }
 
         User user = new User();
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setPaper(userDto.getPaperEnum());
+        user.setName(userRequestDTO.getName());
+        user.setEmail(userRequestDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
+        user.setPaper(userRequestDTO.getPaper());
 
         userRepository.save(user);
         return ResponseEntity.ok("User registered successfully");
