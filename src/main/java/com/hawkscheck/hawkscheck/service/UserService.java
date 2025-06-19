@@ -18,12 +18,12 @@ public class UserService {
     @Autowired
     private UserRepository userRepository; 
 
-    public UserResponseDTO createUser(User user2) {
+    public UserResponseDTO createUser(UserRequestDTO dto) {
         User user = new User();
-        user.setName(user2.getName());
-        user.setEmail(user2.getEmail());
-        user.setPassword(user2.getPassword());
-        user.setPaper(user2.getPaper());
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setPaper(dto.getPaper());
 
         User saved = userRepository.save(user);
 

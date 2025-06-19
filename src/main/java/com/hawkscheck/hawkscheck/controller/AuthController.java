@@ -2,8 +2,6 @@ package com.hawkscheck.hawkscheck.controller;
 
 import com.hawkscheck.hawkscheck.dto.AuthRequestDTO;
 import com.hawkscheck.hawkscheck.dto.AuthResponseDTO;
-import com.hawkscheck.hawkscheck.dto.JwtAuthenticationResponse;
-import com.hawkscheck.hawkscheck.dto.UserDto;
 import com.hawkscheck.hawkscheck.dto.UserRequestDTO;
 import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.UserRepository;

@@ -1,7 +1,9 @@
 package com.hawkscheck.hawkscheck.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.hawkscheck.hawkscheck.dto.UserRequestDTO;
+import com.hawkscheck.hawkscheck.dto.UserResponseDTO;
 import com.hawkscheck.hawkscheck.model.PaperEnum;
 import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
@@ -30,23 +34,28 @@ public class UserServiceTest {
     private UserService userService;
 
     @Test
-    void testCreateUser() {
-        User user = new User();
+void testCreateUser() {
+    UserRequestDTO request = new UserRequestDTO();
+    request.setName("Test User");
+    request.setEmail("test@test.com");
+    request.setPassword("123456");
+    request.setPaper(PaperEnum.ADMIN);
 
-        user.setName("Test User");
-        user.setEmail("test@test.com");
-        user.setPassword("123456");
-        user.setPaper(PaperEnum.ADMIN);
+    User user = new User();
+    user.setName(request.getName());
+    user.setEmail(request.getEmail());
+    user.setPassword(request.getPassword());
+    user.setPaper(request.getPaper());
 
-        when(userRepository.save(any(User.class))).thenReturn(user);
+    when(userRepository.save(any(User.class))).thenReturn(user);
 
-        User created = userService.createUser(user);
+    UserResponseDTO created = userService.createUser(request);
 
-        assertNotNull(created);
-        assertEquals("Danilo", created.getName());
-        assertEquals("danilo@hawks.com", created.getEmail());
-        verify(userRepository, times(1)).save(user);
-    }
+    assertNotNull(created);
+    assertEquals("Test User", created.getName());
+    assertEquals("test@test.com", created.getEmail());
+    verify(userRepository, times(1)).save(any(User.class)); // Melhor usar any()
+}
 
     @Test
     void testGetByEmailFound() {
