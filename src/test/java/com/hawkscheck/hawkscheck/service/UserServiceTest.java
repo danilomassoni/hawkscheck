@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,61 +35,85 @@ public class UserServiceTest {
     @InjectMocks 
     private UserService userService;
 
+    private User user;
+    private UserRequestDTO userRequest;
+
+    @BeforeEach 
+    void setUp() {
+        user = new User();
+        user.setId(1L);
+        user.setName("Test User");
+        user.setEmail("test@test.com");
+        user.setPassword("123456");
+        user.setPaper(PaperEnum.ADMIN);
+
+        userRequest = new UserRequestDTO();
+        userRequest.setName("Test User");
+        userRequest.setEmail("test@test.com");
+        userRequest.setPassword("123456");
+        userRequest.setPaper(PaperEnum.ADMIN);
+        
+    }
+
     @Test
-void testCreateUser() {
-    UserRequestDTO request = new UserRequestDTO();
-    request.setName("Test User");
-    request.setEmail("test@test.com");
-    request.setPassword("123456");
-    request.setPaper(PaperEnum.ADMIN);
-
-    User user = new User();
-    user.setName(request.getName());
-    user.setEmail(request.getEmail());
-    user.setPassword(request.getPassword());
-    user.setPaper(request.getPaper());
-
+    void testCreateUser() {
+    
     when(userRepository.save(any(User.class))).thenReturn(user);
 
-    UserResponseDTO created = userService.createUser(request);
+    UserResponseDTO response = userService.createUser(userRequest);
 
-    assertNotNull(created);
-    assertEquals("Test User", created.getName());
-    assertEquals("test@test.com", created.getEmail());
-    verify(userRepository, times(1)).save(any(User.class)); // Melhor usar any()
+    assertNotNull(response);
+    assertEquals("Test User", response.getName());
+    assertEquals("test@test.com", response.getEmail());
+    assertEquals(PaperEnum.ADMIN, response.getPaper());
+
+    verify(userRepository, times(1)).save(any(User.class)); 
 }
 
     @Test
-    void testGetByEmailFound() {
-        User user = new User();
-        user.setEmail("test@test.com");
+    void testFindAllUser() {
+        when(userRepository.findAll()).thenReturn(List.of(user));
 
-        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+        List<UserResponseDTO> users = userService.findAllUser();
 
-        Optional<User> result = userService.getByEmail("test@test.com");
+        assertEquals(1, users.size());
+        assertEquals("Test User", users.get(0).getName());
+
+        verify(userRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testFindUserIdFound() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        Optional<UserResponseDTO> result = userService.findById(1L);
 
         assertTrue(result.isPresent());
-        assertEquals("test@test.com", result.get().getEmail());
+        assertEquals("Test User", result.get().getName());
+
+        verify(userRepository, times(1)).findById(1L);
     }
 
     @Test
-    void testGetByEmailNotFound() {
-        when(userRepository.findByEmail("non-existent@gmail.com")).thenReturn(Optional.empty());
+    void testFindByIdNotFound() {
+        when(userRepository.findById(2L)).thenReturn(Optional.empty());
 
-        Optional<User> result = userService.getByEmail("non-existent@gmai.com");
-        
+        Optional<UserResponseDTO> result = userService.findById(2L);
+
         assertFalse(result.isPresent());
+
+        verify(userRepository, times(1)).findById(2L);
     }
 
     @Test
-    void testGetAllUsers() {
-        List<User> users = List.of(
-            new User("User 1", "user1@test.com", "123", PaperEnum.ADMIN),
-            new User("User 2", "test2@test.com", "abc", PaperEnum.MENTOR)
-        );
+    void testDeleteUser() {
+        doNothing().when(userRepository).deleteById(1L);
+
+        userService.deleteUser(1L);
+
+        verify(userRepository, times(1)).deleteById(1L);
+
     }
-
-
 
 
 }
