@@ -7,6 +7,7 @@ import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
 import com.hawkscheck.hawkscheck.security.JwtService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +30,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Operation(summary = "Done login with email and password")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO request) {
         try {
@@ -60,6 +62,7 @@ public class AuthController {
     }
 
 //Registration endpoint
+    @Operation(summary = "Register a new user")
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         if (userRepository.existsByEmail(userRequestDTO.getEmail())) {

@@ -17,6 +17,8 @@ import com.hawkscheck.hawkscheck.dto.UserRequestDTO;
 import com.hawkscheck.hawkscheck.dto.UserResponseDTO;
 import com.hawkscheck.hawkscheck.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -24,16 +26,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "Create a new user")
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(dto));
     }
 
+    @Operation(summary = "Find all users")
     @GetMapping 
     public ResponseEntity<List<UserResponseDTO>> findAllUser() {
         return ResponseEntity.ok(userService.findAllUser());
     }
 
+    @Operation(summary = "Find user by ID")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
         return userService.findById(id)
@@ -41,6 +46,7 @@ public class UserController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Delete user by ID")
     @DeleteMapping("/{id}") 
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
