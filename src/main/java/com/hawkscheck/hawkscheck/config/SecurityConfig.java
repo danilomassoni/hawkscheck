@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
 
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(
                             "/swagger-ui/**",
                             "/swagger-ui.html",
@@ -45,9 +46,7 @@ public class SecurityConfig {
                             "/swagger-resources/**",
                             "/webjars/**"
                         ).permitAll()
-
-                        .requestMatchers("/api/auth/**").permitAll()
-                        
+  
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/mentor/**").hasRole("MENTOR")

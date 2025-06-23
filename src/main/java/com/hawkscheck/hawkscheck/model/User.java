@@ -1,13 +1,20 @@
 package com.hawkscheck.hawkscheck.model;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -21,6 +28,7 @@ import lombok.Setter;
 @Table(name = "users")
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
     
     @Id
@@ -38,6 +46,16 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private PaperEnum paper; // ADMIN, MENTOR, STUDENT
+
+    @CreatedDate
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
  
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
