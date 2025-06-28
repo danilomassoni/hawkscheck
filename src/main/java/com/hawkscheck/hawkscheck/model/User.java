@@ -20,6 +20,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +48,11 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private PaperEnum paper; // ADMIN, MENTOR, STUDENT
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
+
 
     @CreatedDate
     @CreationTimestamp
