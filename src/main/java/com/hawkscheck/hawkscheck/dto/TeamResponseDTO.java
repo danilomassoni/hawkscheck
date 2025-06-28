@@ -6,6 +6,13 @@ public class TeamResponseDTO {
     private String name;
     private String mentorName;
 
+
+    public TeamResponseDTO(Long id, String name, String mentorName) {
+        this.id = id;
+        this.name = name;
+        this.mentorName = mentorName;
+    }
+
     public Long getId() {
         return id;
     }
@@ -18,6 +25,7 @@ public class TeamResponseDTO {
         return mentorName;
     }
 
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -26,8 +34,7 @@ public class TeamResponseDTO {
         this.name = name;
     }
 
-    public void setMentorName(String mentoNamer) {
+    public void setMentorName(String mentorName) {
         this.mentorName = mentorName;
     }
-    
 }
