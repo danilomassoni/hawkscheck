@@ -35,6 +35,7 @@ public class TeamService {
     public void addStudentToTeam(Long teamId, Long studentId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new RuntimeException("Team not found"));
+            
         User student = userRepository.findById(studentId)
             .orElseThrow(() -> new UsernameNotFoundException("Student not found"));
     
