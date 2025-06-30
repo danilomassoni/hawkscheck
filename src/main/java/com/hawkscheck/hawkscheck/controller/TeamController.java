@@ -50,8 +50,8 @@ public class TeamController {
 
     @GetMapping("/my")
     @PreAuthorize("hasRole('MENTOR')")
-    public ResponseEntity<TeamResponseDTO> getTeamByMentor(Authentication auth) {
-        return ResponseEntity.ok(teamService.getTeamByMentor(auth.getName()));
+    public ResponseEntity<List<TeamResponseDTO>> getMyTeams(Authentication auth) {
+    return ResponseEntity.ok(teamService.getTeamsByMentor(auth.getName()));
     }
 
     @GetMapping("/{teamId}/members")

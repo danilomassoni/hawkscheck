@@ -58,13 +58,16 @@ public class TeamService {
         .toList();
     }
 
-    public TeamResponseDTO getTeamByMentor(String email) {
-        User mentor = userRepository.findByEmail(email)
+    public List<TeamResponseDTO> getTeamsByMentor(String mentorEmail) {
+        User mentor = userRepository.findByEmail(mentorEmail)
             .orElseThrow(() -> new UsernameNotFoundException("Mentor not found"));
-        Team team = teamRepository.findByMentor(mentor)
-            .orElseThrow(() -> new RuntimeException("Team not found"));
-        return new TeamResponseDTO(team.getId(), team.getName(), mentor.getName());
-}
+
+        List<Team> teams = teamRepository.findByMentor(mentor);
+
+        return teams.stream()
+            .map(team -> new TeamResponseDTO(team.getId(), team.getName(), mentor.getName() ))
+            .toList();
+    }
 
     public List<UserResponseDTO> getTeamMembers(Long teamId) {
     Team team = teamRepository.findById(teamId)
