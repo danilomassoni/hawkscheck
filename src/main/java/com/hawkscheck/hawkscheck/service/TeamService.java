@@ -33,14 +33,20 @@ public class TeamService {
     }
 
     public void addStudentToTeam(Long teamId, Long studentId) {
-        Team team = teamRepository.findById(teamId)
-            .orElseThrow(() -> new RuntimeException("Team not found"));
-            
-        User student = userRepository.findById(studentId)
-            .orElseThrow(() -> new UsernameNotFoundException("Student not found"));
-    
-        student.setTeam(team);
-        userRepository.save(student);
-        }
+    Team team = teamRepository.findById(teamId)
+        .orElseThrow(() -> new RuntimeException("Team not found"));
+
+    User student = userRepository.findById(studentId)
+        .orElseThrow(() -> new UsernameNotFoundException("Student not found"));
+
+    // Verifica se é mesmo um STUDENT
+    if (!student.getPaper().name().equals("STUDENT")) {
+        throw new RuntimeException("Only STUDENT users can be added to a team.");
+    }
+
+    student.setTeam(team);
+    userRepository.save(student);
+}
+
 
 }

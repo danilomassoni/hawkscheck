@@ -30,11 +30,12 @@ public class TeamController {
         return ResponseEntity.ok(teamService.createTeam(dto, auth.getName()));
     }
     
-    @PostMapping("/{teamId}/add-student/{studentId}")
     @PreAuthorize("hasRole('MENTOR')")
+    @PostMapping("/{teamId}/add-student/{studentId}")
     public ResponseEntity<?> addStudent(@PathVariable Long teamId, @PathVariable Long studentId) {
         teamService.addStudentToTeam(teamId, studentId);
         return ResponseEntity.ok().build();
     }
+
 
 }
