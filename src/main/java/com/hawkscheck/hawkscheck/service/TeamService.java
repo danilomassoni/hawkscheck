@@ -1,10 +1,13 @@
 package com.hawkscheck.hawkscheck.service;
 
+import java.util.List;
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.hawkscheck.hawkscheck.dto.TeamRequestDTO;
 import com.hawkscheck.hawkscheck.dto.TeamResponseDTO;
+import com.hawkscheck.hawkscheck.dto.UserResponseDTO;
 import com.hawkscheck.hawkscheck.model.Team;
 import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.TeamRepository;
@@ -46,6 +49,31 @@ public class TeamService {
 
     student.setTeam(team);
     userRepository.save(student);
+}
+
+    public List<TeamResponseDTO> getAllTeams() {
+        return teamRepository.findAll()
+        .stream()
+        .map(team -> new TeamResponseDTO(team.getId(), team.getName(), team.getMentor().getName()))
+        .toList();
+    }
+
+    public TeamResponseDTO getTeamByMentor(String email) {
+        User mentor = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("Mentor not found"));
+        Team team = teamRepository.findByMentor(mentor)
+            .orElseThrow(() -> new RuntimeException("Team not found"));
+        return new TeamResponseDTO(team.getId(), team.getName(), mentor.getName());
+}
+
+    public List<UserResponseDTO> getTeamMembers(Long teamId) {
+    Team team = teamRepository.findById(teamId)
+        .orElseThrow(() -> new RuntimeException("Team not found"));
+
+    List<User> students = userRepository.findByTeam(team);
+    return students.stream()
+        .map(user -> new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getPaper()))
+        .toList();
 }
 
 
