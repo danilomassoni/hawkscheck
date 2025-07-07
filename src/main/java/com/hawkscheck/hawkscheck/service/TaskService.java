@@ -2,19 +2,16 @@ package com.hawkscheck.hawkscheck.service;
 
 import com.hawkscheck.hawkscheck.dto.TaskRequestDTO;
 import com.hawkscheck.hawkscheck.dto.TaskResponseDTO;
-import com.hawkscheck.hawkscheck.model.Task;
-import com.hawkscheck.hawkscheck.model.User;
+import com.hawkscheck.hawkscheck.model.*;
 import com.hawkscheck.hawkscheck.repository.TaskRepository;
+import com.hawkscheck.hawkscheck.repository.TeamRepository;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
-import java.util.Set;
-
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,55 +20,44 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
 
-    private TaskResponseDTO convertToDTO(Task task) {
-    return TaskResponseDTO.builder()
-            .id(task.getId())
-            .title(task.getTitle())
-            .topic(task.getTopic())
-            .description(task.getDescription())
-            .startDate(task.getStartDate())
-            .endDate(task.getEndDate())
-            .priority(task.getPriority())
-            .status(task.getStatus())
-            .mentorName(task.getMentor().getName())
-            .assignedStudents(
-                    task.getStudents().stream()
-                        .map(User::getName)
-                        .collect(Collectors.toList())
-            )
-            .build();
-}
+    public TaskResponseDTO create(TaskRequestDTO dto, Principal principal) {
+        User mentor = userRepository.findByEmail(principal.getName()).orElseThrow();
+        Team team = teamRepository.findById(dto.getTeamId()).orElseThrow();
 
+        Set<User> students = dto.getStudentIds() != null
+                ? dto.getStudentIds().stream()
+                      .map(id -> userRepository.findById(id).orElseThrow())
+                      .collect(Collectors.toSet())
+                : Set.of();
 
-    public TaskResponseDTO create(TaskRequestDTO taskRequest, Principal principal) {
-    User mentor = userRepository.findByEmail(principal.getName())
-            .orElseThrow(() -> new RuntimeException("Mentor não encontrado"));
+        Task task = Task.builder()
+                .title(dto.getTitle())
+                .topic(dto.getTopic())
+                .description(dto.getDescription())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .priority(dto.getPriority())
+                .status(dto.getStatus())
+                .mentor(mentor)
+                .team(team)
+                .students(students)
+                .build();
 
-    Set<User> students = taskRequest.getStudentIds().stream()
-            .map(id -> userRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Aluno com ID " + id + " não encontrado")))
-            .collect(Collectors.toSet());
-
-    Task task = Task.builder()
-            .title(taskRequest.getTitle())
-            .topic(taskRequest.getTopic())
-            .description(taskRequest.getDescription())
-            .startDate(taskRequest.getStartDate())
-            .endDate(taskRequest.getEndDate())
-            .priority(taskRequest.getPriority())
-            .status(taskRequest.getStatus())
-            .mentor(mentor)
-            .students(students)
-            .build();
-
-    taskRepository.save(task);
-    return convertToDTO(task);
-}
+        Task saved = taskRepository.save(task);
+        return toDTO(saved);
+    }
 
     public TaskResponseDTO update(Long id, TaskRequestDTO dto) {
-        Task task = taskRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Task not found"));
+        Task task = taskRepository.findById(id).orElseThrow();
+        Team team = teamRepository.findById(dto.getTeamId()).orElseThrow();
+
+        Set<User> students = dto.getStudentIds() != null
+                ? dto.getStudentIds().stream()
+                      .map(sid -> userRepository.findById(sid).orElseThrow())
+                      .collect(Collectors.toSet())
+                : Set.of();
 
         task.setTitle(dto.getTitle());
         task.setTopic(dto.getTopic());
@@ -80,32 +66,25 @@ public class TaskService {
         task.setEndDate(dto.getEndDate());
         task.setPriority(dto.getPriority());
         task.setStatus(dto.getStatus());
+        task.setStudents(students);
+        task.setTeam(team);
 
-        List<User> students = userRepository.findAllById(dto.getStudentIds());
-        task.setStudents(new HashSet<>(students));
-
-        taskRepository.save(task);
-        return toResponseDTO(task);
+        return toDTO(taskRepository.save(task));
     }
 
     public void delete(Long id) {
         taskRepository.deleteById(id);
     }
 
-    public List<TaskResponseDTO> listAll() {
-        return taskRepository.findAll()
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
     public TaskResponseDTO getById(Long id) {
-        return taskRepository.findById(id)
-                .map(this::toResponseDTO)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+        return toDTO(taskRepository.findById(id).orElseThrow());
     }
 
-    private TaskResponseDTO toResponseDTO(Task task) {
+    public List<TaskResponseDTO> listAll() {
+        return taskRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    private TaskResponseDTO toDTO(Task task) {
         return TaskResponseDTO.builder()
                 .id(task.getId())
                 .title(task.getTitle())
@@ -115,13 +94,11 @@ public class TaskService {
                 .endDate(task.getEndDate())
                 .priority(task.getPriority())
                 .status(task.getStatus())
-                .mentorName(task.getMentor() != null ? task.getMentor().getName() : null)
-                .assignedStudents(
-                    task.getStudents()
-                        .stream()
-                        .map(User::getName)
-                        .collect(Collectors.toList())
-                )
+                .mentorId(task.getMentor().getId())
+                .mentorName(task.getMentor().getName())
+                .teamId(task.getTeam().getId())
+                .teamName(task.getTeam().getName())
+                .studentIds(task.getStudents().stream().map(User::getId).collect(Collectors.toSet()))
                 .build();
     }
 }

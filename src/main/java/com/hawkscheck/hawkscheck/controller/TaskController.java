@@ -3,7 +3,6 @@ package com.hawkscheck.hawkscheck.controller;
 import com.hawkscheck.hawkscheck.dto.TaskRequestDTO;
 import com.hawkscheck.hawkscheck.dto.TaskResponseDTO;
 import com.hawkscheck.hawkscheck.service.TaskService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +19,9 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<TaskResponseDTO> create(@RequestBody TaskRequestDTO taskRequest, Principal principal) {
-        TaskResponseDTO response = taskService.create(taskRequest, principal);
-        return ResponseEntity.ok(response);
+    @PreAuthorize("hasRole('MENTOR')")
+    public ResponseEntity<TaskResponseDTO> create(@RequestBody TaskRequestDTO dto, Principal principal) {
+        return ResponseEntity.ok(taskService.create(dto, principal));
     }
 
     @PutMapping("/{id}")
@@ -38,13 +37,22 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponseDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.getById(id));
+    }
+
     @GetMapping
     public ResponseEntity<List<TaskResponseDTO>> list() {
         return ResponseEntity.ok(taskService.listAll());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TaskResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(taskService.getById(id));
+    @GetMapping("/by-team/{teamId}")
+    public ResponseEntity<List<TaskResponseDTO>> getByTeam(@PathVariable Long teamId) {
+        return ResponseEntity.ok(
+            taskService.listAll().stream()
+                .filter(t -> t.getTeamId().equals(teamId))
+                .toList()
+        );
     }
 }

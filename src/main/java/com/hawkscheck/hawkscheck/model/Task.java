@@ -46,5 +46,9 @@ public class Task {
         inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     private Set<User> students = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "team_id", nullable = false)
+    private Team team;
 }
 
