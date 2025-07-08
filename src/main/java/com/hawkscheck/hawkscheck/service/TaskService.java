@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,12 +78,52 @@ public class TaskService {
     }
 
     public TaskResponseDTO getById(Long id) {
-        return toDTO(taskRepository.findById(id).orElseThrow());
+    Task task = taskRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Tarefa não encontrada com ID: " + id));
+
+    return TaskResponseDTO.builder()
+        .id(task.getId())
+        .title(task.getTitle())
+        .topic(task.getTopic())
+        .description(task.getDescription())
+        .startDate(task.getStartDate())
+        .endDate(task.getEndDate())
+        .priority(task.getPriority())
+        .status(task.getStatus())
+        .mentorName(task.getMentor().getName())
+        .teamId(task.getTeam().getId())
+        .studentIds(
+            task.getStudents().stream()
+                .map(User::getId)
+                .collect(Collectors.toSet())
+        )
+        .build();
     }
 
+
     public List<TaskResponseDTO> listAll() {
-        return taskRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    return taskRepository.findAll()
+        .stream()
+        .map(task -> TaskResponseDTO.builder()
+            .id(task.getId())
+            .title(task.getTitle())
+            .topic(task.getTopic())
+            .description(task.getDescription())
+            .startDate(task.getStartDate())
+            .endDate(task.getEndDate())
+            .priority(task.getPriority())
+            .status(task.getStatus())
+            .mentorName(task.getMentor() != null ? task.getMentor().getName() : null)
+            .teamId(task.getTeam() != null ? task.getTeam().getId() : null)
+            .studentIds(
+                task.getStudents() != null
+                    ? task.getStudents().stream().map(User::getId).collect(Collectors.toSet())
+                    : new HashSet<>()
+            )
+            .build())
+        .collect(Collectors.toList());
     }
+
 
     private TaskResponseDTO toDTO(Task task) {
         return TaskResponseDTO.builder()

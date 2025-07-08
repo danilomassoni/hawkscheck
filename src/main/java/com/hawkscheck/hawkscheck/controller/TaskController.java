@@ -43,8 +43,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponseDTO>> list() {
-        return ResponseEntity.ok(taskService.listAll());
+    public List<TaskResponseDTO> listAll() {
+        return taskService.listAll();
     }
 
     @GetMapping("/by-team/{teamId}")
