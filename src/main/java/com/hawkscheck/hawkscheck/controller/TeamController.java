@@ -60,5 +60,14 @@ public class TeamController {
         return ResponseEntity.ok(teamService.getTeamMembers(teamId));
     }
 
+    @GetMapping("/{teamId}")
+    @PreAuthorize("hasAnyRole('MENTOR', 'ADMIN')")
+    public ResponseEntity<TeamResponseDTO> getTeamById(@PathVariable Long teamId) {
+        return ResponseEntity.ok(teamService.getTeamById(teamId));
+    }
+
+    
+
+
 
 }

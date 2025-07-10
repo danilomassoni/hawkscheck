@@ -100,6 +100,18 @@ public class TaskService {
         .build();
     }
 
+    public List<TaskResponseDTO> listTasksByStudent(Principal principal) {
+    User student = userRepository.findByEmail(principal.getName())
+        .orElseThrow(() -> new RuntimeException("Estudante não encontrado"));
+
+    List<Task> tasks = taskRepository.findByStudentsContaining(student);
+
+    return tasks.stream()
+        .map(this::toDTO)
+        .collect(Collectors.toList());
+    }
+
+
 
     public List<TaskResponseDTO> listAll() {
     return taskRepository.findAll()

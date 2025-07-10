@@ -55,4 +55,11 @@ public class TaskController {
                 .toList()
         );
     }
+
+    @GetMapping("/my-tasks")
+    @PreAuthorize("hasRole('STUDENT')")
+    public List<TaskResponseDTO> getTasksForStudent(Principal principal) {
+        return taskService.listTasksByStudent(principal);
+    }
+
 }

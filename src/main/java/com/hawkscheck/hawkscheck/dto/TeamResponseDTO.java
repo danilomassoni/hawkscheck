@@ -1,10 +1,20 @@
 package com.hawkscheck.hawkscheck.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TeamResponseDTO {
 
     private Long id;
     private String name;
     private String mentorName;
+    private Long mentorId;
 
 
     public TeamResponseDTO(Long id, String name, String mentorName) {

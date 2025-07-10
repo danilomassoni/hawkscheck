@@ -77,7 +77,22 @@ public class TeamService {
     return students.stream()
         .map(user -> new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getPaper()))
         .toList();
-}
+    }
+
+    public TeamResponseDTO getTeamById(Long teamId) {
+    Team team = teamRepository.findById(teamId)
+        .orElseThrow(() -> new RuntimeException("Equipe não encontrada com ID: " + teamId));
+
+    return TeamResponseDTO.builder()
+        .id(team.getId())
+        .name(team.getName())
+        .mentorId(team.getMentor().getId())
+        .mentorName(team.getMentor().getName())
+        .build();
+    }
+
+    
+
 
 
 }
