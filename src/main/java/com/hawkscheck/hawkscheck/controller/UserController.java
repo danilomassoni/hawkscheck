@@ -53,4 +53,11 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Listar todos os usuários com papel STUDENT")
+    @GetMapping("/students")
+    public ResponseEntity<List<UserResponseDTO>> findAllStudents() {
+        return ResponseEntity.ok(userService.findAllStudents());
+    }
+
+
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.hawkscheck.hawkscheck.dto.UserRequestDTO;
 import com.hawkscheck.hawkscheck.dto.UserResponseDTO;
+import com.hawkscheck.hawkscheck.model.PaperEnum;
 import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
 
@@ -59,4 +60,15 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    public List<UserResponseDTO> findAllStudents() {
+    List<User> students = userRepository.findByPaper(PaperEnum.STUDENT);
+        return students.stream()
+            .map(user -> new UserResponseDTO(user.getId(), user.getName(), user.getEmail()))
+            .collect(Collectors.toList());
+    }
+
+
+
+
 }
