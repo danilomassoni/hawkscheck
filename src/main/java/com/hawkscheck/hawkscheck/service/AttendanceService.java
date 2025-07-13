@@ -22,20 +22,41 @@ public class AttendanceService {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
 
-    public AttendanceResponseDTO create(AttendanceRequestDTO dto) {
-        User student = userRepository.findById(dto.getStudentId()).orElseThrow();
-        Team team = teamRepository.findById(dto.getTeamId()).orElseThrow();
+    public List<AttendanceResponseDTO> create(AttendanceRequestDTO dto) {
+        Team team = teamRepository.findById(dto.getTeamId())
+                .orElseThrow(() -> new RuntimeException("Equipe com ID " + dto.getTeamId() + " não encontrada"));
 
-        Attendance attendance = Attendance.builder()
-                .student(student)
-                .team(team)
-                .date(dto.getDate())
-                .present(dto.isPresent())
-                .build();
+        List<Attendance> attendances = dto.getRecords().stream()
+                .map(record -> {
+                    if (record.getStudentId() == null) {
+                        throw new IllegalArgumentException("ID do aluno não pode ser null");
+                    }
 
-        Attendance saved = attendanceRepository.save(attendance);
+                    User student = userRepository.findById(record.getStudentId())
+                            .orElseThrow(() -> new RuntimeException("Aluno com ID " + record.getStudentId() + " não encontrado"));
 
-        return toDTO(saved);
+                    // VERIFICA se já existe presença para esse aluno, time e data
+                    boolean alreadyExists = attendanceRepository.existsByStudentIdAndTeamIdAndDate(
+                            student.getId(), team.getId(), dto.getDate()
+                    );
+                    if (alreadyExists) {
+                        throw new IllegalStateException(
+                                "Já existe uma presença registrada para o aluno " + student.getName() + " em " + dto.getDate()
+                        );
+                    }
+
+                    return Attendance.builder()
+                            .student(student)
+                            .team(team)
+                            .date(dto.getDate())
+                            .present(record.isPresent())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        List<Attendance> saved = attendanceRepository.saveAll(attendances);
+
+        return saved.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     public List<AttendanceResponseDTO> listByTeam(Long teamId) {

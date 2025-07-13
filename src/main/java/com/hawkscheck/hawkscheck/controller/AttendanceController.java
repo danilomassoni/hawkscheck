@@ -19,9 +19,10 @@ public class AttendanceController {
 
     @PostMapping
     @PreAuthorize("hasRole('MENTOR')")
-    public ResponseEntity<AttendanceResponseDTO> create(@RequestBody AttendanceRequestDTO dto) {
+    public ResponseEntity<List<AttendanceResponseDTO>> create(@RequestBody AttendanceRequestDTO dto) {
         return ResponseEntity.ok(attendanceService.create(dto));
     }
+
 
     @GetMapping("/team/{teamId}")
     @PreAuthorize("hasRole('MENTOR')")
