@@ -154,4 +154,20 @@ public class TaskService {
                 .studentIds(task.getStudents().stream().map(User::getId).collect(Collectors.toSet()))
                 .build();
     }
+
+    public List<TaskResponseDTO> listByTeam(Long teamId) {
+    Team team = teamRepository.findById(teamId)
+        .orElseThrow(() -> new RuntimeException("Equipe não encontrada"));
+
+    List<Task> tasks = taskRepository.findByTeam(team);
+
+    return tasks.stream()
+        .map(this::toDTO)
+        .collect(Collectors.toList());
+    }
+
+    
+
+
+
 }

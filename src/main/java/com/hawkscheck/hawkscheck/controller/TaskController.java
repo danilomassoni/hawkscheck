@@ -49,12 +49,9 @@ public class TaskController {
 
     @GetMapping("/by-team/{teamId}")
     public ResponseEntity<List<TaskResponseDTO>> getByTeam(@PathVariable Long teamId) {
-        return ResponseEntity.ok(
-            taskService.listAll().stream()
-                .filter(t -> t.getTeamId().equals(teamId))
-                .toList()
-        );
+        return ResponseEntity.ok(taskService.listByTeam(teamId));
     }
+
 
     @GetMapping("/my-tasks")
     @PreAuthorize("hasRole('STUDENT')")
