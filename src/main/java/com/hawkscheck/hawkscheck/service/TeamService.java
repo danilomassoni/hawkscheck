@@ -49,7 +49,7 @@ public class TeamService {
 
     student.setTeam(team);
     userRepository.save(student);
-}
+    }
 
     public List<TeamResponseDTO> getAllTeams() {
         return teamRepository.findAll()
