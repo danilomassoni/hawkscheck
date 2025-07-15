@@ -62,4 +62,14 @@ public class UserController {
         return ResponseEntity.ok(userService.createStudent(dto, principal));
     }
 
+    @Operation(summary = "Listar alunos vinculados ao mentor logado")
+    @GetMapping("/my-students")
+    @PreAuthorize("hasRole('MENTOR')")
+    public ResponseEntity<List<UserResponseDTO>> getMyStudents(Principal principal) {
+        return ResponseEntity.ok(userService.findStudentsByMentor(principal.getName()));
+    }
+
+
+
+
 }

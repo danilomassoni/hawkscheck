@@ -89,22 +89,30 @@ public class UserService {
     }
 
     public UserResponseDTO createStudent(UserRequestDTO dto, Principal principal) {
+    // Buscar o mentor logado pelo email (que vem do token)
     User mentor = userRepository.findByEmail(principal.getName())
-        .orElseThrow(() -> new RuntimeException("Mentor não encontrado"));
+            .orElseThrow(() -> new RuntimeException("Mentor não encontrado"));
 
-    
+    // Criar novo usuário com papel STUDENT
     User student = new User();
     student.setName(dto.getName());
     student.setEmail(dto.getEmail());
-    student.setPassword(dto.getPassword());
+    student.setPassword(dto.getPassword()); // se tiver senha
     student.setPaper(PaperEnum.STUDENT);
-    
-    User saved = userRepository.save(student);
+    student.setMentor(mentor); // ⚠️ Vinculando mentor ao aluno
 
-    return new UserResponseDTO(saved.getId(), saved.getName(), saved.getEmail(), saved.getPaper());
+    userRepository.save(student);
+
+    return new UserResponseDTO(student.getId(), student.getName(), student.getEmail());
     }
 
 
+    public List<UserResponseDTO> findStudentsByMentor(String mentorEmail) {
+    List<User> students = userRepository.findByPaperAndMentorEmail(PaperEnum.STUDENT, mentorEmail);
+    return students.stream()
+                   .map(UserResponseDTO::new)
+                   .toList();
+    }
 
 
 

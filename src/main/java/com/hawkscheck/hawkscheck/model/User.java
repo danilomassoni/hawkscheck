@@ -63,6 +63,12 @@ public class User implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+
+    // ALTEREI AQUI
+    @ManyToOne
+    @JoinColumn(name = "mentor_id")
+    private User mentor;
  
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

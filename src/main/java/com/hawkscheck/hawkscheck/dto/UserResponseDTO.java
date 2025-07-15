@@ -1,6 +1,7 @@
 package com.hawkscheck.hawkscheck.dto;
 
 import com.hawkscheck.hawkscheck.model.PaperEnum;
+import com.hawkscheck.hawkscheck.model.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,13 @@ public class UserResponseDTO {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public UserResponseDTO(User user) {
+    this.id = user.getId();
+    this.name = user.getName();
+    this.email = user.getEmail();
+    this.paper = user.getPaper();
     }
 
     // Getters e setters
@@ -45,6 +53,5 @@ public class UserResponseDTO {
     public void setEmail(String email) {
         this.email = email;
     }
-
     
 }
