@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import com.hawkscheck.hawkscheck.dto.UserRequestDTO;
 import com.hawkscheck.hawkscheck.dto.UserResponseDTO;
@@ -23,6 +26,10 @@ public class UserService {
 
     @Autowired
     private TeamService teamService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
 
 
@@ -113,6 +120,18 @@ public class UserService {
                    .map(UserResponseDTO::new)
                    .toList();
     }
+
+    // Método para criar um mentor (usado no cadastro inicial)
+    public UserResponseDTO createMentor(UserRequestDTO dto) {
+    User mentor = new User();
+    mentor.setName(dto.getName());
+    mentor.setEmail(dto.getEmail());
+    mentor.setPassword(passwordEncoder.encode(dto.getPassword()));
+    mentor.setPaper(PaperEnum.MENTOR);
+    userRepository.save(mentor);
+    return new UserResponseDTO(mentor.getId(), mentor.getName(), mentor.getEmail(), mentor.getPaper());
+    }
+
 
 
 

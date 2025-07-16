@@ -69,6 +69,14 @@ public class UserController {
         return ResponseEntity.ok(userService.findStudentsByMentor(principal.getName()));
     }
 
+    // Método para criar um mentor (usado no cadastro inicial)
+    @Operation(summary = "Criar um mentor (usado no cadastro inicial)")
+    @PostMapping("/public-create-mentor")
+    public ResponseEntity<UserResponseDTO> publicCreateMentor(@RequestBody UserRequestDTO dto) {
+    return ResponseEntity.ok(userService.createMentor(dto));
+    }
+
+
 
 
 

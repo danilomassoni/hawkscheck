@@ -48,6 +48,7 @@ public class SecurityConfig {
                         ).permitAll()
   
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/public-create-mentor").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/mentor/**").hasRole("MENTOR")
                         .requestMatchers("/api/student/**").hasRole("STUDENT")
