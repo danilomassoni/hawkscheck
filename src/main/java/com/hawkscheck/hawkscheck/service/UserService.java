@@ -104,7 +104,7 @@ public class UserService {
     User student = new User();
     student.setName(dto.getName());
     student.setEmail(dto.getEmail());
-    student.setPassword(dto.getPassword()); // se tiver senha
+    student.setPassword(passwordEncoder.encode(dto.getPassword()));
     student.setPaper(PaperEnum.STUDENT);
     student.setMentor(mentor); // ⚠️ Vinculando mentor ao aluno
 
