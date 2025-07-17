@@ -2,6 +2,7 @@ package com.hawkscheck.hawkscheck.service;
 
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.TeamRepository;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -90,6 +92,32 @@ public class TeamService {
         .mentorName(team.getMentor().getName())
         .build();
     }
+
+
+    public void deleteTeam(Long teamId, String mentorEmail) {
+    Team team = teamRepository.findById(teamId)
+        .orElseThrow(() -> new RuntimeException("Equipe não encontrada"));
+
+    // Valida se o mentor dono está realizando a exclusão
+    if (!team.getMentor().getEmail().equals(mentorEmail)) {
+        throw new RuntimeException("Você não tem permissão para excluir esta equipe.");
+    }
+
+    // Remove a referência do time dos estudantes antes de excluir o time
+    List<User> students = userRepository.findByTeam(team);
+    for (User student : students) {
+        student.setTeam(null);
+        userRepository.save(student);
+    }
+
+    teamRepository.delete(team);
+    }
+
+    public void deleteTeam(Long id) {
+        teamRepository.deleteById(id);
+    }
+
+
 
     
 
