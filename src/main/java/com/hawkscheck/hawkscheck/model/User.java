@@ -69,6 +69,9 @@ public class User implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "mentor_id")
     private User mentor;
+
+    
+
  
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

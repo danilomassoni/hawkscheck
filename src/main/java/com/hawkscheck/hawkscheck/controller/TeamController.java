@@ -78,12 +78,27 @@ public class TeamController {
         return ResponseEntity.ok(teamService.getTeamById(teamId));
     }
 
-    @Operation(summary = "Excluir usuário por ID")
-    @DeleteMapping("/{id}") 
-    public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
-        teamService.deleteTeam(id);
+    @PreAuthorize("hasRole('MENTOR')")
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Excluir equipe por ID (somente mentor dono pode excluir)")
+    public ResponseEntity<Void> deleteTeam(@PathVariable Long id, Principal principal) {
+        teamService.deleteTeam(id, principal.getName());
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/myteamstudent")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<TeamResponseDTO> getTeamForStudent(Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(teamService.getTeamForStudent(email));
+    }
+
+
+
+
+    
+
+
 
 
 }

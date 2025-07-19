@@ -15,6 +15,7 @@ import com.hawkscheck.hawkscheck.repository.TeamRepository;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -94,27 +95,31 @@ public class TeamService {
     }
 
 
+    @Transactional
     public void deleteTeam(Long teamId, String mentorEmail) {
     Team team = teamRepository.findById(teamId)
-        .orElseThrow(() -> new RuntimeException("Equipe não encontrada"));
+        .orElseThrow(() -> new RuntimeException("Equipe não encontrada com ID: " + teamId));
 
-    // Valida se o mentor dono está realizando a exclusão
-    if (!team.getMentor().getEmail().equals(mentorEmail)) {
-        throw new RuntimeException("Você não tem permissão para excluir esta equipe.");
-    }
+    User mentor = userRepository.findByEmail(mentorEmail)
+        .orElseThrow(() -> new RuntimeException("Mentor não encontrado com email: " + mentorEmail));
 
-    // Remove a referência do time dos estudantes antes de excluir o time
-    List<User> students = userRepository.findByTeam(team);
-    for (User student : students) {
-        student.setTeam(null);
-        userRepository.save(student);
+    if (!team.getMentor().getId().equals(mentor.getId())) {
+        throw new AccessDeniedException("Você não tem permissão para excluir esta equipe.");
     }
 
     teamRepository.delete(team);
     }
 
-    public void deleteTeam(Long id) {
-        teamRepository.deleteById(id);
+    public TeamResponseDTO getTeamForStudent(String email) {
+        User student = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+        Team team = student.getTeam();
+        if (team == null) {
+            throw new EntityNotFoundException("Aluno não está vinculado a nenhuma equipe");
+        }
+
+        return TeamResponseDTO.fromEntity(team);
     }
 
 

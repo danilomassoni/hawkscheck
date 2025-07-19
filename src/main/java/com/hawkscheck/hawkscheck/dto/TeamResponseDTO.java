@@ -1,5 +1,7 @@
 package com.hawkscheck.hawkscheck.dto;
 
+import com.hawkscheck.hawkscheck.model.Team;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,4 +49,15 @@ public class TeamResponseDTO {
     public void setMentorName(String mentorName) {
         this.mentorName = mentorName;
     }
+
+    public static TeamResponseDTO fromEntity(Team team) {
+        return TeamResponseDTO.builder()
+            .id(team.getId())
+            .name(team.getName())
+            .mentorId(team.getMentor().getId())
+            .mentorName(team.getMentor().getName())
+            .build();
+    }
+
+    
 }
