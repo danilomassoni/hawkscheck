@@ -2,7 +2,10 @@ package com.hawkscheck.hawkscheck.controller;
 
 import com.hawkscheck.hawkscheck.dto.TaskRequestDTO;
 import com.hawkscheck.hawkscheck.dto.TaskResponseDTO;
+import com.hawkscheck.hawkscheck.dto.TaskStatusUpdateDTO;
 import com.hawkscheck.hawkscheck.service.TaskService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,5 +61,14 @@ public class TaskController {
     public List<TaskResponseDTO> getTasksForStudent(Principal principal) {
         return taskService.listTasksByStudent(principal);
     }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<Void> updateTaskStatus(@PathVariable Long id, @RequestBody @Valid TaskStatusUpdateDTO statusDTO, Principal principal) {
+        taskService.updateStatus(id, statusDTO.getStatus(), principal);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }

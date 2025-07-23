@@ -6,6 +6,8 @@ import com.hawkscheck.hawkscheck.model.*;
 import com.hawkscheck.hawkscheck.repository.TaskRepository;
 import com.hawkscheck.hawkscheck.repository.TeamRepository;
 import com.hawkscheck.hawkscheck.repository.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -165,6 +167,22 @@ public class TaskService {
         .map(this::toDTO)
         .collect(Collectors.toList());
     }
+
+    public void updateStatus(Long taskId, TaskStatusEnum newStatus, Principal principal) {
+        // buscar a tarefa
+        Task task = taskRepository.findById(taskId)
+            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
+
+        // validar se o estudante está autorizado (pertence à equipe da tarefa, etc)
+        if (!isStudentAuthorized(task, principal)) {
+            throw new AccessDeniedException("Acesso negado");
+        }
+
+        task.setStatus(newStatus);
+        taskRepository.save(task);
+    }
+
+
 
     
 
