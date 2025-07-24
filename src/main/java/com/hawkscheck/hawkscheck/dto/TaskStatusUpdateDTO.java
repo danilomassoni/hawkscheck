@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotNull;
 
 public class TaskStatusUpdateDTO {
 
-    @NotNull
+    @NotNull(message = "Status não pode ser nulo")
     private TaskStatusEnum status;
 
-    // Getter e Setter
+    // Getters e Setters
     public TaskStatusEnum getStatus() {
         return status;
     }

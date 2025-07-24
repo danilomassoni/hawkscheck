@@ -169,18 +169,27 @@ public class TaskService {
     }
 
     public void updateStatus(Long taskId, TaskStatusEnum newStatus, Principal principal) {
-        // buscar a tarefa
         Task task = taskRepository.findById(taskId)
             .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
 
-        // validar se o estudante está autorizado (pertence à equipe da tarefa, etc)
-        if (!isStudentAuthorized(task, principal)) {
-            throw new AccessDeniedException("Acesso negado");
+        User student = userRepository.findByEmail(principal.getName())
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        boolean isStudentOfTask = task.getStudents()
+            .stream()
+            .anyMatch(s -> s.getId().equals(student.getId()));
+
+        if (!isStudentOfTask) {
+            throw new SecurityException("Você não tem permissão para alterar esta tarefa");
         }
 
         task.setStatus(newStatus);
         taskRepository.save(task);
     }
+
+    
+
+    
 
 
 

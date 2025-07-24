@@ -49,11 +49,13 @@ public class SecurityConfig {
   
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/public-create-mentor").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/task/{id}/status").hasAnyRole("MENTOR", "STUDENT")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/mentor/**").hasRole("MENTOR")
                         .requestMatchers("/api/student/**").hasRole("STUDENT")
                         .requestMatchers("/api/team/myteamstudent").hasRole("STUDENT")
                         .requestMatchers("/api/team/**").hasRole("MENTOR")
+                        
                         
 
 

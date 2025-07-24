@@ -64,11 +64,13 @@ public class TaskController {
 
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<Void> updateTaskStatus(@PathVariable Long id, @RequestBody @Valid TaskStatusUpdateDTO statusDTO, Principal principal) {
-        taskService.updateStatus(id, statusDTO.getStatus(), principal);
+    public ResponseEntity<Void> updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody TaskStatusUpdateDTO dto,
+            Principal principal) {
+
+        taskService.updateStatus(id, dto.getStatus(), principal);
         return ResponseEntity.noContent().build();
     }
-
-
 
 }
