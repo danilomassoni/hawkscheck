@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,4 +25,5 @@ public class TaskResponseDTO {
     private Long teamId;
     private String teamName;
     private Set<Long> studentIds;
+    private List<String> studentNames;
 }

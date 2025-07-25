@@ -16,6 +16,6 @@ public class TaskRequestDTO {
     private LocalDate endDate;
     private TaskPriorityEnum priority;
     private TaskStatusEnum status;
-    private Long teamId; // 👈 necessário para associar à equipe
-    private Set<Long> studentIds; // IDs dos alunos associados
+    private Long teamId; 
+    private Set<Long> studentIds; 
 }

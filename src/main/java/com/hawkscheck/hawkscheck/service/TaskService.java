@@ -154,6 +154,7 @@ public class TaskService {
                 .teamId(task.getTeam().getId())
                 .teamName(task.getTeam().getName())
                 .studentIds(task.getStudents().stream().map(User::getId).collect(Collectors.toSet()))
+                .studentNames(task.getStudents().stream().map(User::getName).collect(Collectors.toList()))
                 .build();
     }
 
