@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/task")
 @RequiredArgsConstructor
@@ -72,5 +73,13 @@ public class TaskController {
         taskService.updateStatus(id, dto.getStatus(), principal);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-student/{studentId}")
+    @PreAuthorize("hasRole('MENTOR')")
+    public ResponseEntity<List<TaskResponseDTO>> getByStudent(@PathVariable Long studentId, Principal principal) {
+        return ResponseEntity.ok(taskService.listTasksByStudentId(studentId, principal));
+    }
+    
+    
 
 }

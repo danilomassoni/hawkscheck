@@ -1,5 +1,6 @@
 package com.hawkscheck.hawkscheck.service;
 
+
 import com.hawkscheck.hawkscheck.dto.TaskRequestDTO;
 import com.hawkscheck.hawkscheck.dto.TaskResponseDTO;
 import com.hawkscheck.hawkscheck.model.*;
@@ -9,6 +10,8 @@ import com.hawkscheck.hawkscheck.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -21,9 +24,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TaskService {
 
+    
+
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
+
+    
 
     public TaskResponseDTO create(TaskRequestDTO dto, Principal principal) {
         User mentor = userRepository.findByEmail(principal.getName()).orElseThrow();
@@ -190,13 +197,40 @@ public class TaskService {
         taskRepository.save(task);
     }
 
-    
+    public List<TaskResponseDTO> listTasksByStudentId(Long studentId, Principal principal) {
+        User student = userRepository.findById(studentId)
+            .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
 
-    
+        User authenticatedMentor = userRepository.findByEmail(principal.getName())
+            .orElseThrow(() -> new RuntimeException("Mentor não encontrado"));
 
+        // Verifica se o aluno pertence ao time do mentor
+        if (!student.getTeam().getMentor().getId().equals(authenticatedMentor.getId())) {
+            throw new AccessDeniedException("Você não tem permissão para ver as tarefas deste aluno");
+        }
 
+        // Busca tarefas do aluno via task_students
+        List<Task> tasks = taskRepository.findByStudentInTaskStudents(studentId);
 
-    
+        return tasks.stream().map(task -> TaskResponseDTO.builder()
+                .id(task.getId())
+                .title(task.getTitle())
+                .topic(task.getTopic())
+                .description(task.getDescription())
+                .startDate(task.getStartDate())
+                .endDate(task.getEndDate())
+                .priority(task.getPriority())
+                .status(task.getStatus())
+                .mentorId(task.getTeam().getMentor().getId())
+                .mentorName(task.getTeam().getMentor().getName())
+                .teamId(task.getTeam().getId())
+                .teamName(task.getTeam().getName())
+                .studentIds(task.getStudents().stream().map(User::getId).collect(Collectors.toSet()))
+                .studentNames(task.getStudents().stream().map(User::getName).toList())
+                .build()
+        ).toList();
+    }
+
 
 
 
