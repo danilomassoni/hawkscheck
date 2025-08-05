@@ -16,5 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long>{
     List<User> findByTeam(Team team);
     List<User> findByPaper(PaperEnum paper);
     List<User> findByPaperAndMentorEmail(PaperEnum paper, String mentorEmail);
+    
 
 }

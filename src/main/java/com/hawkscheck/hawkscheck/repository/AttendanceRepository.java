@@ -10,4 +10,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     List<Attendance> findByTeamId(Long teamId);
     List<Attendance> findByStudentId(Long studentId);
     boolean existsByStudentIdAndTeamIdAndDate(Long studentId, Long teamId, LocalDate date);
+    
 }

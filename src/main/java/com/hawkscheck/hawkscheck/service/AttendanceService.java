@@ -3,6 +3,7 @@ package com.hawkscheck.hawkscheck.service;
 import com.hawkscheck.hawkscheck.dto.AttendanceRequestDTO;
 import com.hawkscheck.hawkscheck.dto.AttendanceResponseDTO;
 import com.hawkscheck.hawkscheck.model.Attendance;
+import com.hawkscheck.hawkscheck.model.PaperEnum;
 import com.hawkscheck.hawkscheck.model.Team;
 import com.hawkscheck.hawkscheck.model.User;
 import com.hawkscheck.hawkscheck.repository.AttendanceRepository;
@@ -84,4 +85,24 @@ public class AttendanceService {
                 .teamName(attendance.getTeam().getName())
                 .build();
     }
+
+
+    public List<AttendanceResponseDTO> listByAuthenticatedStudent(org.springframework.security.core.userdetails.User userDetails) {
+    String email = userDetails.getUsername();
+
+    User student = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (student.getPaper() != PaperEnum.STUDENT) {
+                throw new RuntimeException("Acesso negado: usuário não é um estudante");
+        }
+
+        List<Attendance> attendances = attendanceRepository.findByStudentId(student.getId());
+
+        return attendances.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+        }
+
+
 }
