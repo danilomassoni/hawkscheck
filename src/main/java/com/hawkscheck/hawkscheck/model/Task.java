@@ -51,6 +51,9 @@ public class Task {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TaskMessage> messages = new HashSet<>();
+
     
 }
 
