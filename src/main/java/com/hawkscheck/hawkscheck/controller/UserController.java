@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.hawkscheck.hawkscheck.dto.UserRequestDTO;
 import com.hawkscheck.hawkscheck.dto.UserResponseDTO;
+import com.hawkscheck.hawkscheck.dto.UserSearchRequestDTO;
+import com.hawkscheck.hawkscheck.dto.UserSearchResponseDTO;
 import com.hawkscheck.hawkscheck.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,9 +74,26 @@ public class UserController {
     // Método para criar um mentor (usado no cadastro inicial)
     @Operation(summary = "Criar um mentor (usado no cadastro inicial)")
     @PostMapping("/public-create-mentor")
-    public ResponseEntity<UserResponseDTO> publicCreateMentor(@RequestBody UserRequestDTO dto) {
-    return ResponseEntity.ok(userService.createMentor(dto));
+        public ResponseEntity<UserResponseDTO> publicCreateMentor(@RequestBody UserRequestDTO dto) {
+        return ResponseEntity.ok(userService.createMentor(dto));
     }
+
+    // Busca usuários por nome ou e-mail (query)
+    @GetMapping("/search")
+    public ResponseEntity<List<UserSearchResponseDTO>> searchUsers(
+            @RequestParam String query) {
+        List<UserSearchResponseDTO> users = userService.searchUsers(query);
+        return ResponseEntity.ok(users);
+    }
+
+    // Buscar usuário por ID, com regex para evitar conflito
+    @GetMapping("/{id:\\d+}")
+    public ResponseEntity<UserResponseDTO> searchfindById(@PathVariable Long id) {
+        return userService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
 
 
 
