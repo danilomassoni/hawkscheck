@@ -44,6 +44,7 @@ public class MessageService {
         message.setSender(sender);
         message.setRecipient(recipient);
         message.setTimestamp(java.time.LocalDateTime.now());
+        message.setCreatedAt(java.time.LocalDateTime.now());
 
         Message saved = messageRepository.save(message);
 
@@ -68,6 +69,7 @@ public class MessageService {
         dto.setRecipientId(message.getRecipient().getId());
         dto.setRecipientName(message.getRecipient().getName());
         dto.setTimestamp(message.getTimestamp());
+        dto.setCreatedAt(message.getCreatedAt());
         return dto;
     }
 

@@ -38,5 +38,7 @@ public class Message {
     @Column(nullable = false)
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
